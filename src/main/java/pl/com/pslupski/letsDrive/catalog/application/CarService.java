@@ -26,8 +26,8 @@ public class CarService implements CarUseCase {
     }
 
     @Override
-    public Car addCar(CreateCarCommand commnand) {
-        Car car = commnand.toCar();
+    public Car addCar(CreateCarCommand command) {
+        Car car = command.toCar();
         return repository.save(car);
     }
 
