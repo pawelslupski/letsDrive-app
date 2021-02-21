@@ -14,9 +14,9 @@ public class Car {
     private String model;
     private Integer year;
     private BigDecimal price;
-    private int mileage;
+    private Integer mileage;
 
-    public Car(String model, Integer year, BigDecimal price, int mileage) {
+    public Car(String model, Integer year, BigDecimal price, Integer mileage) {
         this.model = model;
         this.year = year;
         this.price = price;
