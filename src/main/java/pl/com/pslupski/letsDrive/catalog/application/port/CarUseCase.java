@@ -1,4 +1,4 @@
-package pl.com.pslupski.letsDrive.application.port;
+package pl.com.pslupski.letsDrive.catalog.application.port;
 
 import lombok.Value;
 import pl.com.pslupski.letsDrive.catalog.domain.Car;

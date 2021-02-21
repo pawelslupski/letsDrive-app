@@ -1,10 +1,10 @@
-package pl.com.pslupski.letsDrive.application;
+package pl.com.pslupski.letsDrive.catalog.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.com.pslupski.letsDrive.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.domain.Car;
 import pl.com.pslupski.letsDrive.catalog.domain.CarRepository;
+import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
 
 import java.util.Collections;
 import java.util.List;
