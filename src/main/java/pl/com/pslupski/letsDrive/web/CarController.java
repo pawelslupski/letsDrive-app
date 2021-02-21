@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.CreateCarCommand;
 import pl.com.pslupski.letsDrive.catalog.domain.Car;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 
 import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.*;
@@ -32,6 +34,18 @@ public class CarController {
         return catalog.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addCar(@RequestBody RestCarCommand command) {
+        Car car = catalog.addCar(command.toCreateCommand());
+        URI uri = createdCarUri(car);
+        return ResponseEntity.created(uri).build();
+    }
+
+    private URI createdCarUri(Car car) {
+        return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + car.getId().toString()).build().toUri();
     }
 
     @PutMapping("{/id}")
