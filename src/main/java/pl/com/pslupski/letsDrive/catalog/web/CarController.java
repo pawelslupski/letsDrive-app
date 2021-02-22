@@ -1,4 +1,4 @@
-package pl.com.pslupski.letsDrive.web;
+package pl.com.pslupski.letsDrive.catalog.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
