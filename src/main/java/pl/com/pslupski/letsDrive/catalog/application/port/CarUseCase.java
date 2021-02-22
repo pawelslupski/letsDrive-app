@@ -20,6 +20,12 @@ public interface CarUseCase {
 
     void removeById(Long id);
 
+    List<Car> findByModel(String model);
+
+    List<Car> findByPrice(Integer integer);
+
+    List<Car> findByModelAndPrice(String model, Integer price);
+
     @Value
     class CreateCarCommand {
         private String model;

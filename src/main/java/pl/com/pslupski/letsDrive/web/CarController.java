@@ -14,6 +14,8 @@ import pl.com.pslupski.letsDrive.catalog.domain.Car;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.*;
 
@@ -25,12 +27,25 @@ public class CarController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Car> getAll() {
-        return catalog.findAll();
+    public List<Car> getAll(
+            @RequestParam() Optional<String> model,
+            @RequestParam() Optional<Integer> price,
+            @RequestParam(defaultValue = "5") int limit) {
+        if (model.isPresent() && price.isPresent()) {
+            return catalog.findByModelAndPrice(model.get(), price.get());
+        } else if (model.isPresent()) {
+            return catalog.findByModel(model.get());
+        } else if (price.isPresent()) {
+            return catalog.findByPrice(price.get());
+        }
+        return catalog.findAll().stream().limit(limit).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
+        if (id.equals(102L)) {
+            throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "I am a teapot!");
+        }
         return catalog.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
