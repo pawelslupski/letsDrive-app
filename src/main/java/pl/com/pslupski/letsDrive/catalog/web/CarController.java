@@ -16,10 +16,8 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.UpdateCarCommand;
@@ -34,16 +32,7 @@ public class CarController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Car> getAll(
-            @RequestParam() Optional<String> model,
-            @RequestParam() Optional<Integer> price,
             @RequestParam(defaultValue = "3") int limit) {
-        if (model.isPresent() && price.isPresent()) {
-            return catalog.findByModelAndPrice(model.get(), price.get());
-        } else if (model.isPresent()) {
-            return catalog.findByModel(model.get());
-        } else if (price.isPresent()) {
-            return catalog.findByPrice(price.get());
-        }
         return catalog.findAll().stream().limit(limit).collect(Collectors.toList());
     }
 
@@ -69,7 +58,7 @@ public class CarController {
         return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + car.getId().toString()).build().toUri();
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateCar(@PathVariable Long id, @RequestBody RestCarCommand command) {
         UpdateCarResponse response = catalog.updateCar(command.toUpdateCarCommand(id));
@@ -79,7 +68,7 @@ public class CarController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCar(@PathVariable Long id) {
         catalog.removeById(id);
@@ -87,23 +76,25 @@ public class CarController {
 
     @Data
     private static class RestCarCommand {
+        @NotBlank(message = "Please provide a manufacturer")
+        private String manufacturer;
         @NotBlank(message = "Please provide a model")
         private String model;
         @NotNull(message = "Please provide a year")
         @Min(1900)
         private Integer year;
-        @NotNull(message = "Please provide a price")
-        @DecimalMin("1")
-        private BigDecimal price;
-        @NotNull(message = "Please provide a mileage")
-        private Integer mileage;
+        @NotNull(message = "Please provide the engine capacity")
+        @DecimalMin("1.0")
+        private Double engine;
+        @NotBlank(message = "Please define the engine fuel type")
+        private String fuel;
 
         CreateCarCommand toCreateCommand() {
-            return new CreateCarCommand(model, year, price, mileage);
+            return new CreateCarCommand(manufacturer, model, year, engine, fuel);
         }
 
         UpdateCarCommand toUpdateCarCommand(Long id) {
-            return new UpdateCarCommand(id, model, year, price, mileage);
+            return new UpdateCarCommand(id, manufacturer, model, year, engine, fuel);
         }
     }
 }

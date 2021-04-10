@@ -4,22 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @ToString
 public class Car {
     private Long id;
+    private String manufacturer;
     private String model;
     private Integer year;
-    private BigDecimal price;
-    private Integer mileage;
+    private Double engine;
+    private String fuel;
 
-    public Car(String model, Integer year, BigDecimal price, Integer mileage) {
+    public Car(String manufacturer, String model, Integer year, Double engine, String fuel) {
+        this.manufacturer = manufacturer;
         this.model = model;
         this.year = year;
-        this.price = price;
-        this.mileage = mileage;
+        this.engine = engine;
+        this.fuel = fuel;
     }
 }

@@ -3,7 +3,6 @@ package pl.com.pslupski.letsDrive.catalog.application.port;
 import lombok.Value;
 import pl.com.pslupski.letsDrive.catalog.domain.Car;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,44 +19,43 @@ public interface CarUseCase {
 
     void removeById(Long id);
 
-    List<Car> findByModel(String model);
-
-    List<Car> findByPrice(Integer integer);
-
-    List<Car> findByModelAndPrice(String model, Integer price);
-
     @Value
     class CreateCarCommand {
+        private String manufacturer;
         private String model;
         private Integer year;
-        private BigDecimal price;
-        private int mileage;
+        private Double engine;
+        private String fuel;
 
         public Car toCar() {
-            return new Car(model, year, price, mileage);
+            return new Car(manufacturer, model, year, engine, fuel);
         }
     }
 
     @Value
     class UpdateCarCommand {
         private Long id;
+        private String manufacturer;
         private String model;
         private Integer year;
-        private BigDecimal price;
-        private Integer mileage;
+        private Double engine;
+        private String fuel;
 
         public Car updateFields(Car car) {
+            if (manufacturer != null) {
+                car.setManufacturer(manufacturer);
+            }
             if (model != null) {
                 car.setModel(model);
             }
             if (year != null) {
                 car.setYear(year);
             }
-            if (price != null) {
-                car.setPrice(price);
+            if (engine != null) {
+                car.setEngine(engine);
             }
-            if (mileage != null) {
-                car.setMileage(mileage);
+            if (fuel != null) {
+                car.setFuel(fuel);
             }
             return car;
         }
