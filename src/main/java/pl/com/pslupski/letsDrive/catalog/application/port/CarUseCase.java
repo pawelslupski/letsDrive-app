@@ -19,6 +19,10 @@ public interface CarUseCase {
 
     void removeById(Long id);
 
+    void updateCarImage(UpdateCarImageCommand command);
+
+    void removeCarImage(Long id);
+
     @Value
     class CreateCarCommand {
         private String manufacturer;
@@ -59,6 +63,14 @@ public interface CarUseCase {
             }
             return car;
         }
+    }
+
+    @Value
+    class UpdateCarImageCommand {
+        Long id;
+        String fileName;
+        byte[] file;
+        String contentType;
     }
 
     @Value

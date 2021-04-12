@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
@@ -16,10 +17,12 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.*;
 import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.UpdateCarCommand;
 import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.UpdateCarResponse;
 
@@ -72,6 +75,22 @@ public class CarController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCar(@PathVariable Long id) {
         catalog.removeById(id);
+    }
+
+    @PutMapping(value = "/{id}/cover")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addCarImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        catalog.updateCarImage(new UpdateCarImageCommand(
+                id,
+                file.getOriginalFilename(),
+                file.getBytes(),
+                file.getContentType()));
+    }
+
+    @DeleteMapping(value = "/{id}/cover")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeCarImage(@PathVariable Long id) {
+        catalog.removeCarImage(id);
     }
 
     @Data

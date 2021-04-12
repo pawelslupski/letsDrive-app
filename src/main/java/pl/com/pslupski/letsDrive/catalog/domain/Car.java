@@ -14,6 +14,7 @@ public class Car {
     private Integer year;
     private Double engine;
     private String fuel;
+    private String imageId;
 
     public Car(String manufacturer, String model, Integer year, Double engine, String fuel) {
         this.manufacturer = manufacturer;
