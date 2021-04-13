@@ -1,10 +1,10 @@
-package pl.com.pslupski.letsDrive.catalog.application;
+package pl.com.pslupski.letsDrive.catalog.car.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
-import pl.com.pslupski.letsDrive.catalog.domain.Car;
-import pl.com.pslupski.letsDrive.catalog.domain.CarRepository;
+import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
+import pl.com.pslupski.letsDrive.catalog.car.domain.CarRepository;
 import pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase;
 import pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase.SaveUploadCommand;
 import pl.com.pslupski.letsDrive.uploads.domain.Upload;

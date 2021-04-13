@@ -1,4 +1,4 @@
-package pl.com.pslupski.letsDrive.catalog.domain;
+package pl.com.pslupski.letsDrive.catalog.car.domain;
 
 import java.util.List;
 import java.util.Optional;

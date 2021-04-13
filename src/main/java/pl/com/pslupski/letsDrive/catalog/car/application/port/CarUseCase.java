@@ -1,7 +1,7 @@
-package pl.com.pslupski.letsDrive.catalog.application.port;
+package pl.com.pslupski.letsDrive.catalog.car.application.port;
 
 import lombok.Value;
-import pl.com.pslupski.letsDrive.catalog.domain.Car;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import java.util.Collections;
 import java.util.List;

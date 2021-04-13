@@ -1,8 +1,8 @@
-package pl.com.pslupski.letsDrive.catalog.infrastructure;
+package pl.com.pslupski.letsDrive.catalog.car.infrastructure;
 
 import org.springframework.stereotype.Repository;
-import pl.com.pslupski.letsDrive.catalog.domain.Car;
-import pl.com.pslupski.letsDrive.catalog.domain.CarRepository;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
+import pl.com.pslupski.letsDrive.catalog.car.domain.CarRepository;
 
 import java.util.ArrayList;
 import java.util.List;

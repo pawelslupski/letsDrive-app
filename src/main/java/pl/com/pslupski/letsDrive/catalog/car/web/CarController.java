@@ -1,4 +1,4 @@
-package pl.com.pslupski.letsDrive.catalog.web;
+package pl.com.pslupski.letsDrive.catalog.car.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
-import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.CreateCarCommand;
-import pl.com.pslupski.letsDrive.catalog.domain.Car;
+import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
+import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.CreateCarCommand;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -22,9 +22,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.*;
-import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.UpdateCarCommand;
-import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.UpdateCarResponse;
+import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.*;
+import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.UpdateCarCommand;
+import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.UpdateCarResponse;
 
 @RestController
 @RequestMapping("/cars")

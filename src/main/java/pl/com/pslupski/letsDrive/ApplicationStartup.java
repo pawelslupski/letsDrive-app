@@ -2,9 +2,9 @@ package pl.com.pslupski.letsDrive;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase;
+import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 
-import static pl.com.pslupski.letsDrive.catalog.application.port.CarUseCase.CreateCarCommand;
+import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.CreateCarCommand;
 
 @Component
 public class ApplicationStartup implements CommandLineRunner {

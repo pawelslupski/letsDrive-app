@@ -1,12 +1,14 @@
-package pl.com.pslupski.letsDrive.catalog.domain;
+package pl.com.pslupski.letsDrive.catalog.car.domain;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
+@RequiredArgsConstructor
 public class Car {
     private Long id;
     private String manufacturer;
