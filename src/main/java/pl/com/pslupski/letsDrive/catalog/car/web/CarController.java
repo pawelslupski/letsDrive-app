@@ -63,7 +63,7 @@ public class CarController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateCar(@PathVariable Long id, @Validated(UpdateValidation.class)@RequestBody RestCarCommand command) {
+    public void updateCar(@PathVariable Long id, @Validated(UpdateValidation.class) @RequestBody RestCarCommand command) {
         UpdateCarResponse response = catalog.updateCar(command.toUpdateCarCommand(id));
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());

@@ -44,6 +44,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> placeOrder(@Valid @RequestBody RestOrderCommand command) {
         PlaceOrderResponse response = placeOrderUseCase.placeOrder(command.toPlaceOrderCommand());

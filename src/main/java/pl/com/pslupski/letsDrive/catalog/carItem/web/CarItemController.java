@@ -3,18 +3,18 @@ package pl.com.pslupski.letsDrive.catalog.carItem.web;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 
-import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -48,7 +48,7 @@ public class CarItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addCarItem(@Valid @RequestBody RestCarItemCommand command) {
+    public ResponseEntity<Void> addCarItem(@Validated(CreateValidation.class) @RequestBody RestCarItemCommand command) {
         CarItem carItem = catalog.addCarItem(command.toCreateCommand());
         URI uri = createdCarItemUri(carItem);
         return ResponseEntity.created(uri).build();
@@ -58,9 +58,9 @@ public class CarItemController {
         return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + carItem.getId().toString()).build().toUri();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateCarItem(@PathVariable Long id, @RequestBody RestCarItemCommand command) {
+    public void updateCarItem(@PathVariable Long id, @Validated(UpdateValidation.class) @RequestBody RestCarItemCommand command) {
         UpdateCarItemResponse response = catalog.updateCarItem(command.toUpdateCarItemCommand(id));
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
@@ -74,7 +74,7 @@ public class CarItemController {
         catalog.removeById(id);
     }
 
-    @PutMapping(value = "/{id}/cover")
+    @PutMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void addCarItemImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         catalog.updateCarItemImage(new UpdateCarItemImageCommand(
@@ -84,20 +84,26 @@ public class CarItemController {
                 file.getContentType()));
     }
 
-    @DeleteMapping(value = "/{id}/cover")
+    @DeleteMapping(value = "/{id}/image")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeCarItemImage(@PathVariable Long id) {
         catalog.removeCarItemImage(id);
     }
 
+    interface UpdateValidation {
+    }
+
+    interface CreateValidation {
+    }
+
     @Data
     private static class RestCarItemCommand {
-        @NotBlank(message = "Please provide a productCode")
+        @NotBlank(message = "Please provide a productCode", groups = {CreateValidation.class})
         private String productCode;
-        @NotNull
-        @DecimalMin("0.00")
+        @NotNull(message = "Please provide a price", groups = {CreateValidation.class})
+        @DecimalMin(value = "0.00", groups = {CreateValidation.class, UpdateValidation.class})
         private BigDecimal price;
-        @NotNull(message = "Please provide a category")
+        @NotNull(message = "Please provide a category", groups = {CreateValidation.class})
         private Category category;
         private SubCategory subCategory;
 

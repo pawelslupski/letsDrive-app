@@ -1,6 +1,7 @@
 package pl.com.pslupski.letsDrive.catalog.carItem.application.port;
 
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
@@ -49,7 +50,9 @@ public interface CarItemUseCase {
 
         public CarItem updateFields(CarItem carItem) {
             if (productCode != null) {
-                carItem.setProductCode(productCode);
+                if (StringUtils.isNoneBlank(productCode)) {
+                    carItem.setProductCode(productCode);
+                }
             }
             if (price != null) {
                 carItem.setPrice(price);
