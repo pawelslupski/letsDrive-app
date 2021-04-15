@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
-import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.CreateCarCommand;
+import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.*;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
-import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.*;
-import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.UpdateCarCommand;
-import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.UpdateCarResponse;
 
 @RestController
 @RequestMapping("/cars")
@@ -51,7 +49,7 @@ public class CarController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addCar(@Valid @RequestBody RestCarCommand command) {
+    public ResponseEntity<Void> addCar(@Validated(CreateValidation.class) @RequestBody RestCarCommand command) {
         Car car = catalog.addCar(command.toCreateCommand());
         URI uri = createdCarUri(car);
         return ResponseEntity.created(uri).build();
@@ -61,9 +59,9 @@ public class CarController {
         return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + car.getId().toString()).build().toUri();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateCar(@PathVariable Long id, @RequestBody RestCarCommand command) {
+    public void updateCar(@PathVariable Long id, @Validated(UpdateValidation.class)@RequestBody RestCarCommand command) {
         UpdateCarResponse response = catalog.updateCar(command.toUpdateCarCommand(id));
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
@@ -93,19 +91,25 @@ public class CarController {
         catalog.removeCarImage(id);
     }
 
+    interface UpdateValidation {
+    }
+
+    interface CreateValidation {
+    }
+
     @Data
     private static class RestCarCommand {
-        @NotBlank(message = "Please provide a manufacturer")
+        @NotBlank(message = "Please provide a manufacturer", groups = {CreateValidation.class})
         private String manufacturer;
-        @NotBlank(message = "Please provide a model")
+        @NotBlank(message = "Please provide a model", groups = {CreateValidation.class})
         private String model;
-        @NotNull(message = "Please provide a year")
-        @Min(1900)
+        @NotNull(message = "Please provide a year", groups = {CreateValidation.class})
+        @Min(value = 1900, groups = {CreateValidation.class, UpdateValidation.class})
         private Integer year;
-        @NotNull(message = "Please provide the engine capacity")
-        @DecimalMin("1.0")
+        @NotNull(message = "Please provide the engine capacity", groups = {CreateValidation.class})
+        @DecimalMin(value = "1.0", groups = {CreateValidation.class, UpdateValidation.class})
         private Double engine;
-        @NotBlank(message = "Please define the engine fuel type")
+        @NotBlank(message = "Please define the engine fuel type", groups = {CreateValidation.class})
         private String fuel;
 
         CreateCarCommand toCreateCommand() {

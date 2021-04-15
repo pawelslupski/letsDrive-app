@@ -1,6 +1,7 @@
 package pl.com.pslupski.letsDrive.catalog.car.application.port;
 
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import java.util.Collections;
@@ -47,10 +48,14 @@ public interface CarUseCase {
 
         public Car updateFields(Car car) {
             if (manufacturer != null) {
-                car.setManufacturer(manufacturer);
+                if (StringUtils.isNoneBlank(manufacturer)) {
+                    car.setManufacturer(manufacturer);
+                }
             }
             if (model != null) {
-                car.setModel(model);
+                if (StringUtils.isNoneBlank(model)) {
+                    car.setManufacturer(model);
+                }
             }
             if (year != null) {
                 car.setYear(year);
@@ -59,7 +64,9 @@ public interface CarUseCase {
                 car.setEngine(engine);
             }
             if (fuel != null) {
-                car.setFuel(fuel);
+                if (StringUtils.isNoneBlank(fuel)) {
+                    car.setManufacturer(fuel);
+                }
             }
             return car;
         }
