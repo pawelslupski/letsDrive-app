@@ -54,7 +54,7 @@ public interface CarUseCase {
             }
             if (model != null) {
                 if (StringUtils.isNoneBlank(model)) {
-                    car.setManufacturer(model);
+                    car.setModel(model);
                 }
             }
             if (year != null) {
@@ -65,7 +65,7 @@ public interface CarUseCase {
             }
             if (fuel != null) {
                 if (StringUtils.isNoneBlank(fuel)) {
-                    car.setManufacturer(fuel);
+                    car.setFuel(fuel);
                 }
             }
             return car;
