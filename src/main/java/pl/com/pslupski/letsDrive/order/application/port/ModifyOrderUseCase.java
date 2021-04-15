@@ -13,10 +13,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public interface PlaceOrderUseCase {
+public interface ModifyOrderUseCase {
 
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
-    UpdateOrderResponse updateOrder(UpdateOrderCommand command);
+
+    UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status);
+
+    void removeById(Long id);
 
     @Builder
     @Value
@@ -56,13 +59,13 @@ public interface PlaceOrderUseCase {
     }
 
     @Value
-    class UpdateOrderResponse {
+    class UpdateStatusResponse {
         boolean success;
         Long orderId;
         List<String> errors;
 
-        public static UpdateOrderResponse success(Long orderId) {
-            return new UpdateOrderResponse(true, orderId, Collections.emptyList());
+        public static UpdateStatusResponse success(Long orderId) {
+            return new UpdateStatusResponse(true, orderId, Collections.emptyList());
         }
     }
 }

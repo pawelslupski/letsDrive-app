@@ -2,16 +2,14 @@ package pl.com.pslupski.letsDrive.order.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.com.pslupski.letsDrive.order.application.port.PlaceOrderUseCase;
-import pl.com.pslupski.letsDrive.order.application.port.PlaceOrderUseCase.PlaceOrderCommand;
+import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
-import pl.com.pslupski.letsDrive.order.domain.Order;
+import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase.FullOrder;
 import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
@@ -19,26 +17,27 @@ import pl.com.pslupski.letsDrive.order.domain.Recipient;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static pl.com.pslupski.letsDrive.order.application.port.PlaceOrderUseCase.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.*;
 
 @RequestMapping("/orders")
 @RestController
 @AllArgsConstructor
 public class OrderController {
+    private final ModifyOrderUseCase modifyOrderUseCase;
     private final QueryOrderUseCase queryOrderUseCase;
-    private final PlaceOrderUseCase placeOrderUseCase;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<Order> getAll() {
-        return new ArrayList<>(queryOrderUseCase.findAll());
+    List<FullOrder> getAll() {
+        return queryOrderUseCase.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
+    public ResponseEntity<?> getOrderById(@PathVariable Long id) {
         return queryOrderUseCase.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -46,8 +45,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> placeOrder(@Valid @RequestBody RestOrderCommand command) {
-        PlaceOrderResponse response = placeOrderUseCase.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<?> placeOrder(@Valid @RequestBody CreateOrderCommand command) {
+        PlaceOrderResponse response = modifyOrderUseCase.placeOrder(command.toPlaceOrderCommand());
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -62,8 +61,10 @@ public class OrderController {
 
     @PutMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateBook(@PathVariable Long id, @RequestBody RestOrderCommand command) {
-        UpdateOrderResponse response = placeOrderUseCase.updateOrder(command.toUpdateOrderCommand(id));
+    public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
+        OrderStatus orderStatus = OrderStatus.parseString(command.status)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Unknown status: " + command.status));
+        UpdateStatusResponse response = modifyOrderUseCase.updateOrderStatus(id, orderStatus);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -73,24 +74,47 @@ public class OrderController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
-        queryOrderUseCase.removeById(id);
+        modifyOrderUseCase.removeById(id);
     }
 
     @Data
-    private static class RestOrderCommand {
+    private static class CreateOrderCommand {
         @NotNull(message = "Please provide some order items")
-        List<OrderItem> items;
+        List<OrderItemCommand> items;
         @NotNull(message = "Please provide a recipient")
-        private Recipient recipient;
-        @NotNull(message = "Status is empty, default status will be used!")
-        private OrderStatus status;
+        private RecipientCommand recipient;
 
         PlaceOrderCommand toPlaceOrderCommand() {
-            return new PlaceOrderCommand(items, recipient);
+            List<OrderItem> orderItems = items
+                    .stream()
+                    .map(item -> new OrderItem(item.carItemId, item.quantity)).collect(Collectors.toList());
+            return new PlaceOrderCommand(orderItems, recipient.toRecipient());
         }
+    }
 
-        UpdateOrderCommand toUpdateOrderCommand(Long id) {
-            return new UpdateOrderCommand(id, status);
+    @Data
+    static class OrderItemCommand {
+        Long carItemId;
+        int quantity;
+    }
+
+    @Data
+    public static class RecipientCommand {
+        String firstname;
+        String lastname;
+        String street;
+        String zipCode;
+        String city;
+        String email;
+        String phone;
+
+        Recipient toRecipient() {
+            return new Recipient(firstname, lastname, street, zipCode, city, email, phone);
         }
+    }
+
+    @Data
+    static class UpdateStatusCommand {
+        String status;
     }
 }
