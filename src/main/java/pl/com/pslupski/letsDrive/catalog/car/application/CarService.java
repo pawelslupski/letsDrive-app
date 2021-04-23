@@ -3,8 +3,8 @@ package pl.com.pslupski.letsDrive.catalog.car.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
+import pl.com.pslupski.letsDrive.catalog.car.db.CarJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
-import pl.com.pslupski.letsDrive.catalog.car.domain.CarRepository;
 import pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase;
 import pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase.SaveUploadCommand;
 import pl.com.pslupski.letsDrive.uploads.domain.Upload;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class CarService implements CarUseCase {
-    private final CarRepository repository;
+    private final CarJpaRepository repository;
     private final UploadUseCase upload;
 
     @Override
@@ -48,7 +48,7 @@ public class CarService implements CarUseCase {
 
     @Override
     public void removeById(Long id) {
-        repository.removeById(id);
+        repository.deleteById(id);
     }
 
     @Override

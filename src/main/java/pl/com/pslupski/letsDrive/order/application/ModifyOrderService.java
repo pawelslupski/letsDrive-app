@@ -3,8 +3,8 @@ package pl.com.pslupski.letsDrive.order.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
+import pl.com.pslupski.letsDrive.order.db.OrderJpaRepository;
 import pl.com.pslupski.letsDrive.order.domain.Order;
-import pl.com.pslupski.letsDrive.order.domain.OrderRepository;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class ModifyOrderService implements ModifyOrderUseCase {
-    private final OrderRepository repository;
+    private final OrderJpaRepository repository;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
@@ -37,6 +37,6 @@ public class ModifyOrderService implements ModifyOrderUseCase {
 
     @Override
     public void removeById(Long id) {
-        repository.removeById(id);
+        repository.deleteById(id);
     }
 }

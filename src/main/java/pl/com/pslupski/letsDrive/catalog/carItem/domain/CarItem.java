@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Getter
@@ -16,12 +15,15 @@ import java.math.BigDecimal;
 @Entity
 public class CarItem {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String productCode;
     private BigDecimal price;
+    @Enumerated(EnumType.STRING)
     private Category category;
+    @Enumerated(EnumType.STRING)
     private SubCategory subCategory;
-    private String imageId;
+    private Long imageId;
 //    private Car car; // TODO relation between carItem and specific car
 
     public CarItem(String productCode, BigDecimal price, Category category, SubCategory subCategory) {

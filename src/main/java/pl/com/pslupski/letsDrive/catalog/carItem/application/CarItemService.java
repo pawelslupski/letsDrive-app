@@ -3,8 +3,9 @@ package pl.com.pslupski.letsDrive.catalog.carItem.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
+import pl.com.pslupski.letsDrive.catalog.carItem.db.CarItemJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
-import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItemRepository;
+import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 import pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase;
 import pl.com.pslupski.letsDrive.uploads.domain.Upload;
 
@@ -17,7 +18,7 @@ import static pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase.*
 @Service
 @AllArgsConstructor
 public class CarItemService implements CarItemUseCase {
-    private final CarItemRepository repository;
+    private final CarItemJpaRepository repository;
     private final UploadUseCase upload;
 
     @Override
@@ -28,6 +29,16 @@ public class CarItemService implements CarItemUseCase {
     @Override
     public Optional<CarItem> findById(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public Optional<CarItem> findByProductCode(String productCode) {
+        return repository.findByProductCode(productCode);
+    }
+
+    @Override
+    public List<CarItem> findBySubCategory(SubCategory subCategory) {
+        return repository.findBySubCategory(subCategory);
     }
 
     @Override
@@ -49,7 +60,7 @@ public class CarItemService implements CarItemUseCase {
 
     @Override
     public void removeById(Long id) {
-        repository.removeById(id);
+        repository.deleteById(id);
     }
 
     @Override

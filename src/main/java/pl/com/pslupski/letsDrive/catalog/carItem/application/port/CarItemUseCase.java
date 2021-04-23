@@ -2,7 +2,6 @@ package pl.com.pslupski.letsDrive.catalog.carItem.application.port;
 
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
-import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
@@ -17,6 +16,10 @@ public interface CarItemUseCase {
     List<CarItem> findAll();
 
     Optional<CarItem> findById(Long id);
+
+    Optional<CarItem> findByProductCode(String productCode);
+
+    List<CarItem> findBySubCategory(SubCategory subCategory);
 
     CarItem addCarItem(CreateCarItemCommand toCreateCommand);
 
