@@ -26,7 +26,8 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private List<OrderItem> items;
-    private transient Recipient recipient;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Recipient recipient;
     @Builder.Default
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status = OrderStatus.NEW;

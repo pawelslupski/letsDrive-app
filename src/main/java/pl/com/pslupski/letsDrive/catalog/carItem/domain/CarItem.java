@@ -4,9 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,7 +26,9 @@ public class CarItem {
     @Enumerated(EnumType.STRING)
     private SubCategory subCategory;
     private Long imageId;
-//    private Car car; // TODO relation between carItem and specific car
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable
+    private Set<Car> cars;
 
     public CarItem(String productCode, BigDecimal price, Category category, SubCategory subCategory) {
         this.productCode = productCode;
