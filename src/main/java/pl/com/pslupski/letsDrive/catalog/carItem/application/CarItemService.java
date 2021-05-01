@@ -57,8 +57,13 @@ public class CarItemService implements CarItemUseCase {
         CarItem carItem = new CarItem(command.getProductCode(), command.getPrice(), command.getCategory(),
                 command.getSubCategory());
         Set<Car> cars = fetchCarsByIds(command.getCars());
-        carItem.setCars(cars);
+        updateCarsInCarItem(carItem, cars);
         return carItem;
+    }
+
+    private void updateCarsInCarItem(CarItem carItem, Set<Car> cars) {
+        carItem.removeCars();
+        cars.forEach(carItem::setCar);
     }
 
     @Override
@@ -86,7 +91,7 @@ public class CarItemService implements CarItemUseCase {
             }
         }
         if (command.getCars() != null && !command.getCars().isEmpty()) {
-            carItem.setCars(fetchCarsByIds(Collections.unmodifiableSet(command.getCars())));
+            updateCarsInCarItem(carItem, fetchCarsByIds(Collections.unmodifiableSet(command.getCars())));
         }
         if (command.getPrice() != null) {
             carItem.setPrice(command.getPrice());

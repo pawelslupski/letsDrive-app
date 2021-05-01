@@ -1,23 +1,21 @@
 package pl.com.pslupski.letsDrive.uploads.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import pl.com.pslupski.letsDrive.jpa.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Data
 @NoArgsConstructor
-public class Upload {
-    @Id
-    @GeneratedValue
-    Long id;
+@EqualsAndHashCode(callSuper = true)
+public class Upload extends BaseEntity {
     String fileName;
     byte[] file;
     String contentType;

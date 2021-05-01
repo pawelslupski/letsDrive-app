@@ -5,21 +5,23 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
+import pl.com.pslupski.letsDrive.jpa.BaseEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
-@Data
-@EqualsAndHashCode(exclude = "cars")
-@NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class CarItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = "cars")
+public class CarItem extends BaseEntity {
+    private String uuid = UUID.randomUUID().toString();
     private String productCode;
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
@@ -30,7 +32,7 @@ public class CarItem {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
     @JsonIgnoreProperties("carItems")
-    private Set<Car> cars;
+    private Set<Car> cars = new HashSet<>();
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -39,5 +41,20 @@ public class CarItem {
         this.price = price;
         this.category = category;
         this.subCategory = subCategory;
+    }
+
+    public void setCar(Car car) {
+        cars.add(car);
+        car.getCarItems().add(this);
+    }
+
+    public void removeCar(Car car) {
+        cars.remove(car);
+        car.getCarItems().remove(this);
+    }
+
+    public void removeCars() {
+        cars.forEach(car -> car.getCarItems().remove(this));
+        cars.clear();
     }
 }

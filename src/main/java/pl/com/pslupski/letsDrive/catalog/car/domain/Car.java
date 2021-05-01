@@ -1,26 +1,24 @@
 package pl.com.pslupski.letsDrive.catalog.car.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
+import pl.com.pslupski.letsDrive.jpa.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
+@Getter
+@Setter
 @ToString(exclude = "carItems")
-public class Car {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Car extends BaseEntity {
     private String model;
     private Integer year;
     private Double engine;
@@ -29,7 +27,7 @@ public class Car {
     private Long imageId;
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "cars")
     @JsonIgnoreProperties("cars")
-    private Set<CarItem> carItems;
+    private Set<CarItem> carItems = new HashSet<>();
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -39,5 +37,15 @@ public class Car {
         this.year = year;
         this.engine = engine;
         this.fuel = fuel;
+    }
+
+    public void setCarItem(CarItem carItem) {
+        carItems.add(carItem);
+        carItem.setCar(this);
+    }
+
+    public void removeCarItem(CarItem carItem) {
+        carItems.remove(carItem);
+        carItem.getCars().remove(this);
     }
 }
