@@ -1,7 +1,10 @@
 package pl.com.pslupski.letsDrive.catalog.carItem.application;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import pl.com.pslupski.letsDrive.catalog.car.db.CarJpaRepository;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.db.CarItemJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
@@ -12,77 +15,116 @@ import pl.com.pslupski.letsDrive.uploads.domain.Upload;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase.*;
+import static pl.com.pslupski.letsDrive.uploads.application.port.UploadUseCase.SaveUploadCommand;
 
 @Service
 @AllArgsConstructor
 public class CarItemService implements CarItemUseCase {
-    private final CarItemJpaRepository repository;
+    private final CarItemJpaRepository carItemRepository;
+    private final CarJpaRepository carRepository;
     private final UploadUseCase upload;
 
     @Override
     public List<CarItem> findAll() {
-        return repository.findAll();
+        return carItemRepository.findAll();
     }
 
     @Override
     public Optional<CarItem> findById(Long id) {
-        return repository.findById(id);
+        return carItemRepository.findById(id);
     }
 
     @Override
     public Optional<CarItem> findByProductCode(String productCode) {
-        return repository.findByProductCode(productCode);
+        return carItemRepository.findByProductCode(productCode);
     }
 
     @Override
     public List<CarItem> findBySubCategory(SubCategory subCategory) {
-        return repository.findBySubCategory(subCategory);
+        return carItemRepository.findBySubCategory(subCategory);
     }
 
     @Override
     public CarItem addCarItem(CreateCarItemCommand command) {
-        CarItem carItem = command.toCarItem();
-        return repository.save(carItem);
+        CarItem carItem = toCarItem(command);
+        return carItemRepository.save(carItem);
+    }
+
+    private CarItem toCarItem(CreateCarItemCommand command) {
+        CarItem carItem = new CarItem(command.getProductCode(), command.getPrice(), command.getCategory(),
+                command.getSubCategory());
+        Set<Car> cars = fetchCarsByIds(command.getCars());
+        carItem.setCars(cars);
+        return carItem;
     }
 
     @Override
     public UpdateCarItemResponse updateCarItem(UpdateCarItemCommand command) {
-        return repository.findById(command.getId())
+        return carItemRepository.findById(command.getId())
                 .map(carItem -> {
-                    CarItem updatedCarItem = command.updateFields(carItem);
-                    repository.save(updatedCarItem);
+                    CarItem updatedCarItem = updateFields(command, carItem);
+                    carItemRepository.save(updatedCarItem);
                     return UpdateCarItemResponse.SUCCESS;
                 }).orElseGet(() -> new UpdateCarItemResponse(false,
                         Collections.singletonList("Car item not found with id: " + command.getId())));
     }
 
+    private Set<Car> fetchCarsByIds(Set<Long> cars) {
+        return cars.stream()
+                .map(carId -> carRepository.findById(carId)
+                        .orElseThrow(() -> new IllegalArgumentException("Unable to find car with id")))
+                .collect(Collectors.toSet());
+    }
+
+    public CarItem updateFields(UpdateCarItemCommand command, CarItem carItem) {
+        if (command.getProductCode() != null) {
+            if (StringUtils.isNoneBlank(command.getProductCode())) {
+                carItem.setProductCode(command.getProductCode());
+            }
+        }
+        if (command.getCars() != null && !command.getCars().isEmpty()) {
+            carItem.setCars(fetchCarsByIds(Collections.unmodifiableSet(command.getCars())));
+        }
+        if (command.getPrice() != null) {
+            carItem.setPrice(command.getPrice());
+        }
+        if (command.getCategory() != null) {
+            carItem.setCategory(command.getCategory());
+        }
+        if (command.getSubCategory() != null) {
+            carItem.setSubCategory(command.getSubCategory());
+        }
+        return carItem;
+    }
+
     @Override
     public void removeById(Long id) {
-        repository.deleteById(id);
+        carItemRepository.deleteById(id);
     }
 
     @Override
     public void updateCarItemImage(UpdateCarItemImageCommand command) {
-        repository.findById(command.getId())
+        carItemRepository.findById(command.getId())
                 .ifPresent(carItem -> {
                     Upload savedUpload = upload.save(new SaveUploadCommand(command.getFileName(),
                             command.getFile(), command.getContentType()));
                     carItem.setImageId(savedUpload.getId());
-                    repository.save(carItem);
+                    carItemRepository.save(carItem);
                 });
     }
 
     @Override
     public void removeCarItemImage(Long id) {
-        repository.findById(id)
+        carItemRepository.findById(id)
                 .ifPresent(carItem -> {
                     if (carItem.getImageId() != null) {
                         upload.removeById(carItem.getImageId());
                     }
                     carItem.setImageId(null);
-                    repository.save(carItem);
+                    carItemRepository.save(carItem);
                 });
     }
 }

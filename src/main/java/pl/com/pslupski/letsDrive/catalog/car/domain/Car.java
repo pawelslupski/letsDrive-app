@@ -1,19 +1,22 @@
 package pl.com.pslupski.letsDrive.catalog.car.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
+@ToString(exclude = "carItems")
 public class Car {
     @Id
     @GeneratedValue
@@ -25,7 +28,10 @@ public class Car {
     private String manufacturer;
     private Long imageId;
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "cars")
+    @JsonIgnoreProperties("cars")
     private Set<CarItem> carItems;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public Car(String manufacturer, String model, Integer year, Double engine, String fuel) {
         this.manufacturer = manufacturer;

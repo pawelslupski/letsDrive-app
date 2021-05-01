@@ -1,20 +1,21 @@
 package pl.com.pslupski.letsDrive.catalog.carItem.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
+@EqualsAndHashCode(exclude = "cars")
+@NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class CarItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +29,10 @@ public class CarItem {
     private Long imageId;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
+    @JsonIgnoreProperties("carItems")
     private Set<Car> cars;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public CarItem(String productCode, BigDecimal price, Category category, SubCategory subCategory) {
         this.productCode = productCode;

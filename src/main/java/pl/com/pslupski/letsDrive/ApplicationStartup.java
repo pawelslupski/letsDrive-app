@@ -1,9 +1,10 @@
 package pl.com.pslupski.letsDrive;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
@@ -13,45 +14,34 @@ import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import static pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase.CreateCarCommand;
 import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.PlaceOrderCommand;
 
 @Component
+@AllArgsConstructor
 public class ApplicationStartup implements CommandLineRunner {
     private final CarUseCase carCatalog;
     private final CarItemUseCase carItemCatalog;
     private final ModifyOrderUseCase placeOrder;
-    private final String subCategory;
-    private final Long limit;
-
-    public ApplicationStartup(CarUseCase carCatalog, CarItemUseCase carItemCatalog, ModifyOrderUseCase placeOrder,
-    @Value("${letsDrive.carItemCatalog.query}") String subCategory, @Value("${letsDrive.carItemCatalog.limit}") Long limit) {
-        this.carCatalog = carCatalog;
-        this.carItemCatalog = carItemCatalog;
-        this.placeOrder = placeOrder;
-        this.subCategory = subCategory;
-        this.limit = limit;
-    }
 
     @Override
     public void run(String... args) throws Exception {
         initData();
-        searchCarItemCatalog();
         placeOrder();
     }
 
     private void initData() {
-        carCatalog.addCar(new CreateCarCommand("BMW", "X5", 2019, 4.4, "petrol"));
-        carCatalog.addCar(new CreateCarCommand("Toyota",  "Prius", 2017, 1.5, "hybrid"));
-        carCatalog.addCar(new CreateCarCommand("Volvo", "S60", 2014, 2.0, "petrol"));
-        carCatalog.addCar(new CreateCarCommand("Fiat", "Punto", 2012, 1.2, "petrol"));
-        carCatalog.addCar(new CreateCarCommand("Opel", "Mokka", 2017, 1.8, "diesel"));
+        Car car = carCatalog.addCar(new CreateCarCommand("BMW", "X5", 2019, 4.4, "petrol"));
+        Car car2 = carCatalog.addCar(new CreateCarCommand("Toyota",  "Prius", 2017, 1.5, "hybrid"));
+        Car car3 = carCatalog.addCar(new CreateCarCommand("Volvo", "S60", 2014, 2.0, "petrol"));
+        Car car4 = carCatalog.addCar(new CreateCarCommand("Fiat", "Punto", 2012, 1.2, "petrol"));
+        Car car5 = carCatalog.addCar(new CreateCarCommand("Opel", "Mokka", 2017, 1.8, "diesel"));
 
-        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KJ5646T", new BigDecimal("123.67"), Category.CAR_PARTS, SubCategory.BRAKES));
-        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KY5622I", new BigDecimal("255.45"), Category.CAR_PARTS, SubCategory.BRAKES));
-        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("YU5231L", new BigDecimal("1200.00"), Category.CAR_PARTS, SubCategory.COOLING_AND_HEATING));
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KJ5646T", new BigDecimal("123.67"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId())));
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KY5622I", new BigDecimal("255.45"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId(), car2.getId())));
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("YU5231L", new BigDecimal("1200.00"), Category.CAR_PARTS, SubCategory.COOLING_AND_HEATING, Set.of(car3.getId(), car4.getId(), car5.getId())));
     }
 
     private void placeOrder() {
@@ -79,14 +69,5 @@ public class ApplicationStartup implements CommandLineRunner {
                 .build();
 
         placeOrder.placeOrder(command);
-    }
-
-    private void searchCarItemCatalog() {
-        findBySubCategory();
-    }
-
-    private void findBySubCategory() {
-        List<CarItem> bySubCategory = carItemCatalog.findBySubCategory(SubCategory.valueOf(subCategory));
-        bySubCategory.forEach(System.out::println);
     }
 }

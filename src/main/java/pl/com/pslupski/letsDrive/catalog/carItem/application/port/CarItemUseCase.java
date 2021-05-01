@@ -1,7 +1,6 @@
 package pl.com.pslupski.letsDrive.catalog.carItem.application.port;
 
 import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
@@ -10,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CarItemUseCase {
 
@@ -37,10 +37,7 @@ public interface CarItemUseCase {
         private BigDecimal price;
         private Category category;
         private SubCategory subCategory;
-
-        public CarItem toCarItem() {
-            return new CarItem(productCode, price, category, subCategory);
-        }
+        private Set<Long> cars;
     }
 
     @Value
@@ -50,24 +47,7 @@ public interface CarItemUseCase {
         private BigDecimal price;
         private Category category;
         private SubCategory subCategory;
-
-        public CarItem updateFields(CarItem carItem) {
-            if (productCode != null) {
-                if (StringUtils.isNoneBlank(productCode)) {
-                    carItem.setProductCode(productCode);
-                }
-            }
-            if (price != null) {
-                carItem.setPrice(price);
-            }
-            if (category != null) {
-                carItem.setCategory(category);
-            }
-            if (subCategory != null) {
-                carItem.setSubCategory(subCategory);
-            }
-            return carItem;
-        }
+        private Set<Long> cars;
     }
 
     @Value

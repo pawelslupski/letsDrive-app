@@ -17,11 +17,13 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase.*;
@@ -106,13 +108,15 @@ public class CarItemController {
         @NotNull(message = "Please provide a category", groups = {CreateValidation.class})
         private Category category;
         private SubCategory subCategory;
+        @NotEmpty
+        private Set<Long> cars;
 
         CreateCarItemCommand toCreateCommand() {
-            return new CreateCarItemCommand(productCode, price, category, subCategory);
+            return new CreateCarItemCommand(productCode, price, category, subCategory, cars);
         }
 
         UpdateCarItemCommand toUpdateCarItemCommand(Long id) {
-            return new UpdateCarItemCommand(id, productCode, price, category, subCategory);
+            return new UpdateCarItemCommand(id, productCode, price, category, subCategory, cars);
         }
     }
 }
