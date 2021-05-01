@@ -25,7 +25,7 @@ public class Car extends BaseEntity {
     private String fuel;
     private String manufacturer;
     private Long imageId;
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "cars")
+    @ManyToMany(mappedBy = "cars", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties("cars")
     private Set<CarItem> carItems = new HashSet<>();
     @CreatedDate

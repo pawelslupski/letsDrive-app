@@ -2,6 +2,7 @@ package pl.com.pslupski.letsDrive.catalog.car.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.car.db.CarJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
@@ -36,11 +37,11 @@ public class CarService implements CarUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateCarResponse updateCar(UpdateCarCommand command) {
         return repository.findById(command.getId())
                 .map(car -> {
-                    Car updatedCar = command.updateFields(car);
-                    repository.save(updatedCar);
+                    command.updateFields(car);
                     return UpdateCarResponse.SUCCESS;
                 }).orElseGet(() -> new UpdateCarResponse(false,
                         Collections.singletonList("Car not found with id: " + command.getId())));

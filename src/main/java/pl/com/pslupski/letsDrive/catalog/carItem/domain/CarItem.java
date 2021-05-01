@@ -29,7 +29,7 @@ public class CarItem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SubCategory subCategory;
     private Long imageId;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable
     @JsonIgnoreProperties("carItems")
     private Set<Car> cars = new HashSet<>();

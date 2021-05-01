@@ -3,6 +3,7 @@ package pl.com.pslupski.letsDrive;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
@@ -27,6 +28,7 @@ public class ApplicationStartup implements CommandLineRunner {
     private final ModifyOrderUseCase placeOrder;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         initData();
         placeOrder();

@@ -3,6 +3,7 @@ package pl.com.pslupski.letsDrive.catalog.carItem.application;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.pslupski.letsDrive.catalog.car.db.CarJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
@@ -29,7 +30,7 @@ public class CarItemService implements CarItemUseCase {
 
     @Override
     public List<CarItem> findAll() {
-        return carItemRepository.findAll();
+        return carItemRepository.findAllEager();
     }
 
     @Override
@@ -48,6 +49,7 @@ public class CarItemService implements CarItemUseCase {
     }
 
     @Override
+    @Transactional
     public CarItem addCarItem(CreateCarItemCommand command) {
         CarItem carItem = toCarItem(command);
         return carItemRepository.save(carItem);
@@ -67,11 +69,11 @@ public class CarItemService implements CarItemUseCase {
     }
 
     @Override
+    @Transactional
     public UpdateCarItemResponse updateCarItem(UpdateCarItemCommand command) {
         return carItemRepository.findById(command.getId())
                 .map(carItem -> {
-                    CarItem updatedCarItem = updateFields(command, carItem);
-                    carItemRepository.save(updatedCarItem);
+                    updateFields(command, carItem);
                     return UpdateCarItemResponse.SUCCESS;
                 }).orElseGet(() -> new UpdateCarItemResponse(false,
                         Collections.singletonList("Car item not found with id: " + command.getId())));
