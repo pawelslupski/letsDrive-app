@@ -28,7 +28,7 @@ public class ModifyOrderService implements ModifyOrderUseCase {
     public UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status) {
         return repository.findById(id)
                 .map(order -> {
-                    order.setStatus(status);
+                    order.updateStatus(status);
                     Order updatedOrder = repository.save(order);
                     return UpdateStatusResponse.success(updatedOrder.getId());
                 }).orElseGet(() -> new UpdateStatusResponse(false, id,

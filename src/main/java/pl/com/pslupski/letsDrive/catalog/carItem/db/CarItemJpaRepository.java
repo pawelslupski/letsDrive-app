@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface CarItemJpaRepository extends JpaRepository<CarItem, Long> {
 
-    @Query("SELECT c from CarItem c JOIN FETCH c.cars")
+    @Query("SELECT DISTINCT c from CarItem c JOIN FETCH c.cars")
     List<CarItem> findAllEager();
 
     Optional<CarItem> findByProductCode(String productCode);
