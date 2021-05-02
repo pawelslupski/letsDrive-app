@@ -1,7 +1,8 @@
-package pl.com.pslupski.letsDrive.catalog.application.port;
+package pl.com.pslupski.letsDrive.catalog.car.application.port;
 
 import lombok.Value;
-import pl.com.pslupski.letsDrive.catalog.domain.Car;
+import org.apache.commons.lang3.StringUtils;
+import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,10 @@ public interface CarUseCase {
     UpdateCarResponse updateCar(UpdateCarCommand command);
 
     void removeById(Long id);
+
+    void updateCarImage(UpdateCarImageCommand command);
+
+    void removeCarImage(Long id);
 
     @Value
     class CreateCarCommand {
@@ -43,10 +48,14 @@ public interface CarUseCase {
 
         public Car updateFields(Car car) {
             if (manufacturer != null) {
-                car.setManufacturer(manufacturer);
+                if (StringUtils.isNoneBlank(manufacturer)) {
+                    car.setManufacturer(manufacturer);
+                }
             }
             if (model != null) {
-                car.setModel(model);
+                if (StringUtils.isNoneBlank(model)) {
+                    car.setModel(model);
+                }
             }
             if (year != null) {
                 car.setYear(year);
@@ -55,10 +64,20 @@ public interface CarUseCase {
                 car.setEngine(engine);
             }
             if (fuel != null) {
-                car.setFuel(fuel);
+                if (StringUtils.isNoneBlank(fuel)) {
+                    car.setFuel(fuel);
+                }
             }
             return car;
         }
+    }
+
+    @Value
+    class UpdateCarImageCommand {
+        Long id;
+        String fileName;
+        byte[] file;
+        String contentType;
     }
 
     @Value
