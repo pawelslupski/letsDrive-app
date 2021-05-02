@@ -7,11 +7,14 @@ import pl.com.pslupski.letsDrive.catalog.carItem.db.CarItemJpaRepository;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.db.OrderJpaRepository;
+import pl.com.pslupski.letsDrive.order.db.RecipientJPaRepository;
 import pl.com.pslupski.letsDrive.order.domain.Order;
 import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
+import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class ModifyOrderService implements ModifyOrderUseCase {
     private final OrderJpaRepository repository;
     private final CarItemJpaRepository carItemRepository;
+    private final RecipientJPaRepository recipientRepository;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
@@ -28,12 +32,18 @@ public class ModifyOrderService implements ModifyOrderUseCase {
                 .map(this::toOrderItem)
                 .collect(Collectors.toSet());
         Order order = Order.builder()
-                .recipient(command.getRecipient())
+                .recipient(getOrCreateRecipient(command.getRecipient()))
                 .items(items)
                 .build();
         Order savedOrder = repository.save(order);
         carItemRepository.saveAll(updateItemsQuantity(items));
         return PlaceOrderResponse.success(savedOrder.getId());
+    }
+
+    private Recipient getOrCreateRecipient(Recipient recipient) {
+        return recipientRepository
+                .findByEmailIgnoreCase(recipient.getEmail())
+                .orElse(recipient);
     }
 
     private OrderItem toOrderItem(OrderItemCommand command) {

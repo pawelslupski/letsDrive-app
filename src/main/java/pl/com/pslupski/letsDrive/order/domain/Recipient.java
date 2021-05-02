@@ -12,11 +12,11 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Recipient extends BaseEntity {
+    private String email;
     private String firstname;
     private String lastname;
     private String street;
     private String zipCode;
     private String city;
-    private String email;
     private String phone;
 }
