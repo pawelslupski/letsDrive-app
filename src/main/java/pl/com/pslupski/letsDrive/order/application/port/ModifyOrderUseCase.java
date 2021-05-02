@@ -1,9 +1,6 @@
 package pl.com.pslupski.letsDrive.order.application.port;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Singular;
-import lombok.Value;
+import lombok.*;
 import pl.com.pslupski.letsDrive.order.domain.Order;
 import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
@@ -26,8 +23,14 @@ public interface ModifyOrderUseCase {
     @AllArgsConstructor
     class PlaceOrderCommand {
         @Singular
-        List<OrderItem> items;
+        List<OrderItemCommand> items;
         Recipient recipient;
+    }
+
+    @Value
+    class OrderItemCommand {
+        Long carItemId;
+        int quantity;
     }
 
     @Value

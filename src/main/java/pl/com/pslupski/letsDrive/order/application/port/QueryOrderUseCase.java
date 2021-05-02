@@ -2,6 +2,7 @@ package pl.com.pslupski.letsDrive.order.application.port;
 
 import lombok.Value;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
+import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface QueryOrderUseCase {
 
@@ -19,7 +21,7 @@ public interface QueryOrderUseCase {
     @Value
     class FullOrder {
         Long id;
-        List<FullOrderItem> items;
+        Set<OrderItem> items;
         OrderStatus status;
         Recipient recipient;
         LocalDateTime createdAt;
@@ -29,11 +31,5 @@ public interface QueryOrderUseCase {
                     .map(item -> item.getCarItem().getPrice().multiply(new BigDecimal(item.getQuantity())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
-    }
-
-    @Value
-    class FullOrderItem {
-        CarItem carItem;
-        int quantity;
     }
 }

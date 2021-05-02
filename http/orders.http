@@ -1,8 +1,43 @@
-#GET http://localhost:8080/orders
+#### Initialize Data
+#POST http://localhost:8080/admin/data
+#
+#
+#### Catalog
+#GET http://localhost:8080/catalog
 
-PUT http://localhost:8080/orders/9/status
+###
+POST http://localhost:8080/orders
 Content-Type: application/json
 
 {
-  "status": "PAID"
+  "items": [
+    {
+      "carItemId": 6,
+      "quantity": 25
+    },
+    {
+      "carItemId": 7,
+      "quantity": 10
+    }
+  ],
+  "recipient": {
+    "name": "John Doe",
+    "phone": "123-456-789",
+    "street": "Cwiartki 3/4",
+    "city": "Krakow",
+    "zipCode": "30-150",
+    "email": "johndoe@example.org"
+  }
 }
+
+####
+#GET http://localhost:8080/orders/9
+#
+#
+####
+#PUT http://localhost:8080/orders/9/status
+#Content-Type: application/json
+#
+#{
+#  "status": "SHIPPED"
+#}

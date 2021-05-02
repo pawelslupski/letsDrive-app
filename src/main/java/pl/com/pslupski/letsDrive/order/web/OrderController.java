@@ -8,20 +8,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
+import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.PlaceOrderCommand;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase.FullOrder;
-import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
-import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.*;
+import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.PlaceOrderResponse;
+import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.UpdateStatusResponse;
 
 @RequestMapping("/orders")
 @RestController
@@ -45,8 +43,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> placeOrder(@Valid @RequestBody CreateOrderCommand command) {
-        PlaceOrderResponse response = modifyOrderUseCase.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<?> placeOrder(@Valid @RequestBody PlaceOrderCommand command) {
+        PlaceOrderResponse response = modifyOrderUseCase.placeOrder(command);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -75,42 +73,6 @@ public class OrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
         modifyOrderUseCase.removeById(id);
-    }
-
-    @Data
-    private static class CreateOrderCommand {
-        @NotNull(message = "Please provide some order items")
-        List<OrderItemCommand> items;
-        @NotNull(message = "Please provide a recipient")
-        private RecipientCommand recipient;
-
-        PlaceOrderCommand toPlaceOrderCommand() {
-            List<OrderItem> orderItems = items
-                    .stream()
-                    .map(item -> new OrderItem(item.carItemId, item.quantity)).collect(Collectors.toList());
-            return new PlaceOrderCommand(orderItems, recipient.toRecipient());
-        }
-    }
-
-    @Data
-    static class OrderItemCommand {
-        Long carItemId;
-        int quantity;
-    }
-
-    @Data
-    public static class RecipientCommand {
-        String firstname;
-        String lastname;
-        String street;
-        String zipCode;
-        String city;
-        String email;
-        String phone;
-
-        Recipient toRecipient() {
-            return new Recipient(firstname, lastname, street, zipCode, city, email, phone);
-        }
     }
 
     @Data

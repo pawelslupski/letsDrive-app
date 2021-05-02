@@ -12,6 +12,7 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
+import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.OrderItemCommand;
 import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
@@ -65,8 +66,8 @@ public class AdminController {
         ModifyOrderUseCase.PlaceOrderCommand command = ModifyOrderUseCase.PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
-                .item(new OrderItem(carItem.getId(), 2))
-                .item(new OrderItem(carItem2.getId(), 3))
+                .item(new OrderItemCommand(carItem.getId(), 2))
+                .item(new OrderItemCommand(carItem2.getId(), 3))
                 .build();
 
         placeOrder.placeOrder(command);

@@ -28,25 +28,13 @@ public class QueryOrderService implements QueryOrderUseCase {
     }
 
     private FullOrder toFullOrder(Order order) {
-        List<FullOrderItem> fullOrderItems = toFullOrderItems(order.getItems());
         return new FullOrder(
                 order.getId(),
-                fullOrderItems,
+                order.getItems(),
                 order.getStatus(),
                 order.getRecipient(),
                 order.getCreatedAt()
         );
-    }
-
-    private List<FullOrderItem> toFullOrderItems(List<OrderItem> items) {
-        return items.stream()
-                .map(item -> {
-                    CarItem carItem = itemRepository
-                            .findById(item.getCarItemId())
-                            .orElseThrow(() -> new IllegalStateException("Unable to find the item with ID: " + item.getCarItemId()));
-                    return new FullOrderItem(carItem, item.getQuantity());
-                })
-                .collect(Collectors.toList());
     }
 
     @Override
