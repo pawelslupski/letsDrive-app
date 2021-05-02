@@ -38,6 +38,7 @@ public interface CarItemUseCase {
         private Category category;
         private SubCategory subCategory;
         private Set<Long> cars;
+        private Long available;
     }
 
     @Value

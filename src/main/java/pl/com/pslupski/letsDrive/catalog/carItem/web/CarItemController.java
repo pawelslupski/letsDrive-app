@@ -15,10 +15,7 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -108,11 +105,14 @@ public class CarItemController {
         @NotNull(message = "Please provide a category", groups = {CreateValidation.class})
         private Category category;
         private SubCategory subCategory;
+        @NotNull
+        @PositiveOrZero
+        private Long available;
         @NotEmpty
         private Set<Long> cars;
 
         CreateCarItemCommand toCreateCommand() {
-            return new CreateCarItemCommand(productCode, price, category, subCategory, cars);
+            return new CreateCarItemCommand(productCode, price, category, subCategory, cars, available);
         }
 
         UpdateCarItemCommand toUpdateCarItemCommand(Long id) {

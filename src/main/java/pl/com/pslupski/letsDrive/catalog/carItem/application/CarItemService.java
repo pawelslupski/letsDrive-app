@@ -57,7 +57,7 @@ public class CarItemService implements CarItemUseCase {
 
     private CarItem toCarItem(CreateCarItemCommand command) {
         CarItem carItem = new CarItem(command.getProductCode(), command.getPrice(), command.getCategory(),
-                command.getSubCategory());
+                command.getSubCategory(), command.getAvailable());
         Set<Car> cars = fetchCarsByIds(command.getCars());
         updateCarsInCarItem(carItem, cars);
         return carItem;

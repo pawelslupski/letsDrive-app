@@ -29,6 +29,7 @@ public class CarItem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SubCategory subCategory;
     private Long imageId;
+    private Long available;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable
     @JsonIgnoreProperties("carItems")
@@ -36,11 +37,12 @@ public class CarItem extends BaseEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public CarItem(String productCode, BigDecimal price, Category category, SubCategory subCategory) {
+    public CarItem(String productCode, BigDecimal price, Category category, SubCategory subCategory, Long available) {
         this.productCode = productCode;
         this.price = price;
         this.category = category;
         this.subCategory = subCategory;
+        this.available = available;
     }
 
     public void setCar(Car car) {
