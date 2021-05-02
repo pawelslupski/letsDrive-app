@@ -5,14 +5,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.jpa.BaseEntity;
-import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
-
-import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.*;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
