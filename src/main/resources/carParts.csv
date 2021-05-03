@@ -1,0 +1,11 @@
+productCode,price,category,subCategory,cars,thumbnail
+"KJ5646T","123.67","CAR_PARTS","BRAKES","BMW X5 2019 4.4 petrol","https://cdn.pixabay.com/photo/2017/01/05/10/38/auto-repair-1954636_960_720.jpg"
+"KY5622I","255.45","CAR_PARTS","BRAKES","Toyota Prius 2017 1.5 hybrid","https://cdn.pixabay.com/photo/2018/11/27/17/11/brakes-maintenance-3841839_960_720.jpg"
+"YU5231L","355.00","CAR_PARTS","COOLING_AND_HEATING","Volvo S60 2014 2.0 petrol","https://cdn.pixabay.com/photo/2020/01/17/00/45/radiator-4772041_960_720.png"
+"YW4780L","657.00","CAR_PARTS","SUSPENSION_STEERING","Volvo S60 2015 2.0 petrol","https://cdn.pixabay.com/photo/2015/03/27/23/50/volvo-695419_960_720.jpg"
+"DE5523N","952.00","CAR_PARTS","COOLING_AND_HEATING","Fiat Punto 2012 1.2 petrol","https://cdn.pixabay.com/photo/2020/01/17/00/45/radiator-4772042_960_720.png"
+"CR5523N","334.00","CAR_PARTS","TRANSMISSION","Fiat Punto 2007 1.2 petrol","https://cdn.pixabay.com/photo/2017/09/16/13/46/clutch-2755549_960_720.jpg"
+"OM8860N","659.00","CAR_PARTS","SUSPENSION_STEERING","Opel Mokka 2007 1.8 diesel","https://cdn.pixabay.com/photo/2018/03/04/17/18/technology-3198585_960_720.jpg"
+"OI5646T","90.65","OIL","","BMW X5 2019 4.4 petrol","https://cdn.pixabay.com/photo/2018/08/03/08/29/mechanic-3581324_960_720.jpg"
+"AC4520U","65.87","ACCESSORIES","","Toyota Prius 2017 1.5 hybrid","https://cdn.pixabay.com/photo/2018/09/20/19/38/clutch-3691709_960_720.jpg"
+"AC5231L","88.00","ACCESSORIES","","Volvo S60 2014 2.0 petrol,Toyota Prius 2017 1.5 hybrid","https://cdn.pixabay.com/photo/2015/07/11/12/17/compressor-840706_960_720.jpg"

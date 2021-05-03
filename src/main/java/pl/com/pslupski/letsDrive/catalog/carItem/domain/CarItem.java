@@ -21,7 +21,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = "cars")
 public class CarItem extends BaseEntity {
-    private String uuid = UUID.randomUUID().toString();
+    @Column(unique = true)
     private String productCode;
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
