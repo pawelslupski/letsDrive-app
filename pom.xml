@@ -20,6 +20,7 @@
 		<lombok.version>1.18.16</lombok.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<postgres.version>42.2.18.jre7</postgres.version>
+		<opencsv.version>5.4</opencsv.version>
 	</properties>
 
 	<dependencies>
@@ -56,6 +57,11 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>${commons.lang.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>${opencsv.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->

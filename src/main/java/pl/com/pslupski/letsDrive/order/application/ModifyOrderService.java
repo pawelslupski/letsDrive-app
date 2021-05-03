@@ -8,13 +8,9 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.db.OrderJpaRepository;
 import pl.com.pslupski.letsDrive.order.db.RecipientJPaRepository;
-import pl.com.pslupski.letsDrive.order.domain.Order;
-import pl.com.pslupski.letsDrive.order.domain.OrderItem;
-import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
-import pl.com.pslupski.letsDrive.order.domain.Recipient;
+import pl.com.pslupski.letsDrive.order.domain.*;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,7 +32,7 @@ public class ModifyOrderService implements ModifyOrderUseCase {
                 .items(items)
                 .build();
         Order savedOrder = repository.save(order);
-        carItemRepository.saveAll(updateItemsQuantity(items));
+        carItemRepository.saveAll(reduceItemsQty(items));
         return PlaceOrderResponse.success(savedOrder.getId());
     }
 
@@ -59,18 +55,30 @@ public class ModifyOrderService implements ModifyOrderUseCase {
     public UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status) {
         return repository.findById(id)
                 .map(order -> {
-                    order.updateStatus(status);
+                    UpdateStatusResult updateStatusResult = order.updateStatus(status);
+                    if (updateStatusResult.isRevoked()) {
+                        carItemRepository.saveAll(revokeItemsQty(order.getItems()));
+                    }
                     Order updatedOrder = repository.save(order);
                     return UpdateStatusResponse.success(updatedOrder.getId());
                 }).orElseGet(() -> new UpdateStatusResponse(false, id,
                         Collections.singletonList("Order NOT found with ID: " + id)));
     }
 
-    private Set<CarItem> updateItemsQuantity(Set<OrderItem> items) {
+    private Set<CarItem> reduceItemsQty(Set<OrderItem> items) {
         return items.stream()
                 .map(orderItem -> {
                     CarItem carItem = orderItem.getCarItem();
                     carItem.setAvailable(carItem.getAvailable() - orderItem.getQuantity());
+                    return carItem;
+                }).collect(Collectors.toSet());
+    }
+
+    private Set<CarItem> revokeItemsQty(Set<OrderItem> items) {
+        return items.stream()
+                .map(orderItem -> {
+                    CarItem carItem = orderItem.getCarItem();
+                    carItem.setAvailable(carItem.getAvailable() + orderItem.getQuantity());
                     return carItem;
                 }).collect(Collectors.toSet());
     }

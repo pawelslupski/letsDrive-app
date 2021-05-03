@@ -6,38 +6,38 @@
 #GET http://localhost:8080/catalog
 
 ###
-POST http://localhost:8080/orders
-Content-Type: application/json
-
-{
-  "items": [
-    {
-      "carItemId": 6,
-      "quantity": 25
-    },
-    {
-      "carItemId": 7,
-      "quantity": 10
-    }
-  ],
-  "recipient": {
-    "name": "John Doe",
-    "phone": "123-456-789",
-    "street": "Cwiartki 3/4",
-    "city": "Krakow",
-    "zipCode": "30-150",
-    "email": "johndoe@example.org"
-  }
-}
+#POST http://localhost:8080/orders
+#Content-Type: application/json
+#
+#{
+#  "items": [
+#    {
+#      "carItemId": 6,
+#      "quantity": 25
+#    },
+#    {
+#      "carItemId": 7,
+#      "quantity": 10
+#    }
+#  ],
+#  "recipient": {
+#    "name": "John Doe",
+#    "phone": "123-456-789",
+#    "street": "Cwiartki 3/4",
+#    "city": "Krakow",
+#    "zipCode": "30-150",
+#    "email": "johndoe@example.org"
+#  }
+#}
 
 ####
 #GET http://localhost:8080/orders/9
 #
 #
 ####
-#PUT http://localhost:8080/orders/9/status
-#Content-Type: application/json
-#
-#{
-#  "status": "SHIPPED"
-#}
+PUT http://localhost:8080/orders/13/status
+Content-Type: application/json
+
+{
+  "status": "CANCELLED"
+}
