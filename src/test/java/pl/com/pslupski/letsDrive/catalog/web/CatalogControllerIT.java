@@ -17,6 +17,7 @@ import java.util.List;
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CatalogControllerIT {
+
     @Autowired
     CarController carController;
     @Autowired
