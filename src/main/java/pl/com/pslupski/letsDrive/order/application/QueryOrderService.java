@@ -3,11 +3,9 @@ package pl.com.pslupski.letsDrive.order.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.com.pslupski.letsDrive.catalog.carItem.db.CarItemJpaRepository;
-import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
 import pl.com.pslupski.letsDrive.order.db.OrderJpaRepository;
 import pl.com.pslupski.letsDrive.order.domain.Order;
-import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 
 import java.util.List;
 import java.util.Optional;
