@@ -10,7 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.PlaceOrderCommand;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
-import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase.FullOrder;
+import pl.com.pslupski.letsDrive.order.application.FullOrder;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 
 import javax.validation.Valid;
