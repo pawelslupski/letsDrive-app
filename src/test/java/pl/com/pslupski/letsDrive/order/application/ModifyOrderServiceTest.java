@@ -52,7 +52,6 @@ class ModifyOrderServiceTest {
     public void userCanOrderMoreCarItmesThanAvailable() {
         //Given
         CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"), Category.CAR_PARTS, SubCategory.BRAKES, 2L));
-        CarItem carItem2 = carItemJpaRepository.save(new CarItem("YI7821T", new BigDecimal("93.20"), Category.CAR_PARTS, SubCategory.ENGINE_PARTS, 2L));
         Recipient recipient = Recipient.builder().email("szpslupski@o2.pl").build();
         PlaceOrderCommand orderCommand = PlaceOrderCommand
                 .builder()
