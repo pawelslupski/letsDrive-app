@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import pl.com.pslupski.letsDrive.catalog.car.application.port.CarUseCase;
 import pl.com.pslupski.letsDrive.catalog.car.domain.Car;
-import pl.com.pslupski.letsDrive.catalog.car.web.CarController;
 
 import java.util.List;
 
