@@ -1,4 +1,4 @@
-package pl.com.pslupski.letsDrive.catalog.web;
+package pl.com.pslupski.letsDrive.catalog.car.web;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
