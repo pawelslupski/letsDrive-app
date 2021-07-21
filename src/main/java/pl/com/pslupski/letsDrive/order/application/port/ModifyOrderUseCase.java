@@ -1,8 +1,10 @@
 package pl.com.pslupski.letsDrive.order.application.port;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
+import lombok.Value;
 import pl.com.pslupski.letsDrive.order.domain.Order;
-import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
@@ -14,7 +16,7 @@ public interface ModifyOrderUseCase {
 
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
 
-    UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status);
+    UpdateStatusResponse updateOrderStatus(UpdateStatusCommand c);
 
     void removeById(Long id);
 
@@ -44,6 +46,13 @@ public interface ModifyOrderUseCase {
             }
             return order;
         }
+    }
+
+    @Value
+    class UpdateStatusCommand {
+        Long orderId;
+        OrderStatus status;
+        String email;
     }
 
     @Value

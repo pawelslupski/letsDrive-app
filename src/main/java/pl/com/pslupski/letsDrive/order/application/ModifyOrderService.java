@@ -52,17 +52,26 @@ public class ModifyOrderService implements ModifyOrderUseCase {
     }
 
     @Override
-    public UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status) {
-        return repository.findById(id)
+    public UpdateStatusResponse updateOrderStatus(UpdateStatusCommand command) {
+        return repository.findById(command.getOrderId())
                 .map(order -> {
-                    UpdateStatusResult updateStatusResult = order.updateStatus(status);
+                    if (!hasAccess(command, order)) {
+                        return new UpdateStatusResponse(false, command.getOrderId(),
+                                Collections.singletonList("Unauthorized"));
+                    }
+                    UpdateStatusResult updateStatusResult = order.updateStatus(command.getStatus());
                     if (updateStatusResult.isRevoked()) {
                         carItemRepository.saveAll(revokeItemsQty(order.getItems()));
                     }
                     Order updatedOrder = repository.save(order);
                     return UpdateStatusResponse.success(updatedOrder.getId());
-                }).orElseGet(() -> new UpdateStatusResponse(false, id,
-                        Collections.singletonList("Order NOT found with ID: " + id)));
+                }).orElseGet(() -> new UpdateStatusResponse(false, command.getOrderId(),
+                        Collections.singletonList("Order NOT found with ID: " + command.getOrderId())));
+    }
+
+    private boolean hasAccess(UpdateStatusCommand command, Order order) {
+        String email = command.getEmail();
+        return email.equalsIgnoreCase(order.getRecipient().getEmail()) || email.equalsIgnoreCase("admin@example.org");
     }
 
     private Set<CarItem> reduceItemsQty(Set<OrderItem> items) {

@@ -1,6 +1,7 @@
 package pl.com.pslupski.letsDrive.order.application;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -61,17 +62,32 @@ class OrderServiceTest {
         // Given
         CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"),
                 Category.CAR_PARTS, SubCategory.BRAKES, 20L));
-        Long orderId = placedOrder(carItem1.getId(), 17);
+        String recipientEmail = "marek@example.org";
+        Long orderId = placedOrder(carItem1.getId(), 17, recipientEmail);
         Assertions.assertEquals(3L, getAvailableCopiesOf(carItem1));
         // When
-        orderService.updateOrderStatus(orderId, OrderStatus.CANCELED);
+        // TODO fix on security module
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipientEmail);
+        orderService.updateOrderStatus(updateStatusCommand);
         // Then
         Assertions.assertEquals(20L, getAvailableCopiesOf(carItem1));
         Assertions.assertEquals(OrderStatus.CANCELED, queryOrderUseCase.findById(orderId).get().getStatus());
     }
 
-    private Long placedOrder(Long carItemId, int copies) {
-        Recipient recipient = Recipient.builder().email("szpslupski@o2.pl").build();
+    @Disabled("todo")
+    public void userCannotRevokePaidOrder() { }
+
+    @Disabled("todo")
+    public void userCannotRevokeShippedOrder() { }
+
+    @Disabled("todo")
+    public void userCannotOrderNoExistingBooks() { }
+
+    @Disabled("todo")
+    public void userCannotOrderNativeNumberOfBooks() { }
+
+    private Long placedOrder(Long carItemId, int copies, String recipientEmail) {
+        Recipient recipient = Recipient.builder().email(recipientEmail).build();
         PlaceOrderCommand orderCommand = PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
@@ -81,8 +97,12 @@ class OrderServiceTest {
         return response.getOrderId();
     }
 
+    private Long placedOrder(Long carItemId, int copies) {
+        return placedOrder(carItemId, copies, "szpslupski@o2.pl");
+    }
+
     @Test
-    public void userCanOrderMoreCarItemsThanAvailable() {
+    public void userCanOrderMoreCarItemsThanAvailableThrowsException() {
         //Given
         CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"),
                 Category.CAR_PARTS, SubCategory.BRAKES, 20L));
@@ -99,6 +119,55 @@ class OrderServiceTest {
         //Then
         Assertions.assertTrue(exception.getMessage()
                 .contains("Too many copies of the part " + carItem1.getId() + " requested"));
+    }
+
+    @Test
+    public void userCannotRevokeOtherUsersOrder() {
+        // Given
+        CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"),
+                Category.CAR_PARTS, SubCategory.BRAKES, 20L));
+        String recipientEmail = "baska@example.org";
+        Long orderId = placedOrder(carItem1.getId(), 3, recipientEmail);
+        Assertions.assertEquals(17L, getAvailableCopiesOf(carItem1));
+        // When
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, "brianek@o2.pl");
+        orderService.updateOrderStatus(updateStatusCommand);
+        // Then
+        assertEquals(17L, getAvailableCopiesOf(carItem1));
+        assertEquals(OrderStatus.NEW, queryOrderUseCase.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void adminCanRevokeOtherUsersOrder() {
+        // Given
+        CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"),
+                Category.CAR_PARTS, SubCategory.BRAKES, 20L));
+        String adminEmail = "admin@example.org";
+        Long orderId = placedOrder(carItem1.getId(), 6, adminEmail);
+        Assertions.assertEquals(14L, getAvailableCopiesOf(carItem1));
+        // When
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminEmail);
+        orderService.updateOrderStatus(updateStatusCommand);
+        // Then
+        assertEquals(20L, getAvailableCopiesOf(carItem1));
+        assertEquals(OrderStatus.CANCELED, queryOrderUseCase.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void adminCanMarkOrderAsPaid() {
+        // Given
+        CarItem carItem1 = carItemJpaRepository.save(new CarItem("KZ2220T", new BigDecimal("124.67"),
+                Category.CAR_PARTS, SubCategory.BRAKES, 20L));
+        String adminEmail = "admin@example.org";
+        Long orderId = placedOrder(carItem1.getId(), 15, adminEmail);
+        Assertions.assertEquals(5L, getAvailableCopiesOf(carItem1));
+        // When
+        // TODO fix on security module
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminEmail);
+        orderService.updateOrderStatus(updateStatusCommand);
+        // Then
+        Assertions.assertEquals(5L, getAvailableCopiesOf(carItem1));
+        Assertions.assertEquals(OrderStatus.PAID, queryOrderUseCase.findById(orderId).get().getStatus());
     }
 
     private Long getAvailableCopiesOf(CarItem carItem) {

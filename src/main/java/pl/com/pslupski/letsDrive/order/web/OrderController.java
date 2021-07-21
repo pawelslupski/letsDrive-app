@@ -16,8 +16,10 @@ import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.*;
 import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.PlaceOrderResponse;
 import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.UpdateStatusResponse;
 
@@ -59,10 +61,12 @@ public class OrderController {
 
     @PutMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateOrderStatus(@PathVariable Long id, @RequestBody UpdateStatusCommand command) {
-        OrderStatus orderStatus = OrderStatus.parseString(command.status)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Unknown status: " + command.status));
-        UpdateStatusResponse response = modifyOrderUseCase.updateOrderStatus(id, orderStatus);
+    public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String status = body.get("status");
+        OrderStatus orderStatus = OrderStatus.parseString(status)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Unknown status: " + status));
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(id, orderStatus, "admin@example.org");
+        UpdateStatusResponse response = modifyOrderUseCase.updateOrderStatus(updateStatusCommand);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -73,10 +77,5 @@ public class OrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
         modifyOrderUseCase.removeById(id);
-    }
-
-    @Data
-    static class UpdateStatusCommand {
-        String status;
     }
 }
