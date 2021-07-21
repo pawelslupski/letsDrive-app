@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import pl.com.pslupski.letsDrive.order.domain.Delivery;
 import pl.com.pslupski.letsDrive.order.domain.Order;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
@@ -27,6 +28,7 @@ public interface ModifyOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
+        Delivery delivery;
     }
 
     @Value

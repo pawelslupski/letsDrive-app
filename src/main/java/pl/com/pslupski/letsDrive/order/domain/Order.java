@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pl.com.pslupski.letsDrive.jpa.BaseEntity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class Order extends BaseEntity {
     private Recipient recipient;
     @Builder.Default
     @Enumerated(value = EnumType.STRING)
+    private Delivery delivery = Delivery.COURIER;
+    @Builder.Default
+    @Enumerated(value = EnumType.STRING)
     private OrderStatus status = OrderStatus.NEW;
     @CreatedDate
     private LocalDateTime createdAt;
@@ -36,5 +40,15 @@ public class Order extends BaseEntity {
         UpdateStatusResult result = status.updateStatus(newStatus);
         this.status = result.getNewStatus();
         return result;
+    }
+
+    public BigDecimal getItemsPrice() {
+        return items.stream()
+                .map(item -> item.getCarItem().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getDeliveryPrice() {
+        return delivery.getPrice();
     }
 }

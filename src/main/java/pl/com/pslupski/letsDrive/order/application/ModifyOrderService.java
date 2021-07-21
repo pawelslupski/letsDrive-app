@@ -29,6 +29,7 @@ public class ModifyOrderService implements ModifyOrderUseCase {
                 .collect(Collectors.toSet());
         Order order = Order.builder()
                 .recipient(getOrCreateRecipient(command.getRecipient()))
+                .delivery(command.getDelivery())
                 .items(items)
                 .build();
         Order savedOrder = repository.save(order);

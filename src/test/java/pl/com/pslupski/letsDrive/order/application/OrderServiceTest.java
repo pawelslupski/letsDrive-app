@@ -13,6 +13,7 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.Category;
 import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
+import pl.com.pslupski.letsDrive.order.domain.Delivery;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
@@ -48,6 +49,7 @@ class OrderServiceTest {
                 .recipient(recipient)
                 .item(new OrderItemCommand(carItem1.getId(), 8))
                 .item(new OrderItemCommand(carItem2.getId(), 10))
+                .delivery(Delivery.COURIER)
                 .build();
         //When
         PlaceOrderResponse response = orderService.placeOrder(orderCommand);
@@ -92,6 +94,7 @@ class OrderServiceTest {
                 .builder()
                 .recipient(recipient)
                 .item(new OrderItemCommand(carItemId, copies))
+                .delivery(Delivery.COURIER)
                 .build();
         PlaceOrderResponse response = orderService.placeOrder(orderCommand);
         return response.getOrderId();
@@ -172,5 +175,24 @@ class OrderServiceTest {
 
     private Long getAvailableCopiesOf(CarItem carItem) {
         return carItemUseCase.findById(carItem.getId()).get().getAvailable();
+    }
+
+    @Test
+    public void shippingCostsAreAddedToTotalOrder() {
+        // Given
+        CarItem carItem = givenCarItem(30L, "29.90");
+        // When
+        Long orderId = placedOrder(carItem.getId(), 1);
+        // Then
+        assertEquals("39.80", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
+    private FullOrder orderOf(Long orderId) {
+        return queryOrderUseCase.findById(orderId).get();
+    }
+
+    private CarItem givenCarItem(long available, String price) {
+        return carItemJpaRepository.save(new CarItem("YU2550M", new BigDecimal(price),
+                Category.OIL, SubCategory.COOLING_AND_HEATING, available));
     }
 }
