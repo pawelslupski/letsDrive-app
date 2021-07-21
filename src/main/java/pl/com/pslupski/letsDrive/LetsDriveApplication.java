@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import pl.com.pslupski.letsDrive.order.application.OrdersProperties;
 
 @EnableScheduling
-@EnableJpaAuditing
 @EnableConfigurationProperties(OrdersProperties.class)
 @SpringBootApplication
 public class LetsDriveApplication {
