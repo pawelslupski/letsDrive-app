@@ -28,7 +28,8 @@ public interface ModifyOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
-        Delivery delivery;
+        @Builder.Default
+        Delivery delivery = Delivery.COURIER;
     }
 
     @Value

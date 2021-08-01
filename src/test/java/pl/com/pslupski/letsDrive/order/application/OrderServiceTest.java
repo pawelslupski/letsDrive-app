@@ -187,6 +187,42 @@ class OrderServiceTest {
         assertEquals("39.80", orderOf(orderId).getFinalPrice().toPlainString());
     }
 
+    @Test
+    public void shippingCostsAreDiscountedOver100Zlotys() {
+        // Given
+        CarItem carItem = givenCarItem(25L, "35.00");
+        // When
+        Long orderId = placedOrder(carItem.getId(), 3);
+        // Then
+        FullOrder order = orderOf(orderId);
+        assertEquals("105.00", order.getOrderPrice().getItemsPrice().toPlainString());
+        assertEquals("105.00", order.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestCarItemIsHalfPriceReducedWhenTotalOrderCostIsOver200Zlotys() {
+        // Given
+        CarItem carItem = givenCarItem(25L, "50.00");
+        // When
+        Long orderId = placedOrder(carItem.getId(), 5);
+        // Then
+        FullOrder order = orderOf(orderId);
+        assertEquals("250.00", order.getOrderPrice().getItemsPrice().toPlainString());
+        assertEquals("225.00", order.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestCarItemIsFreeWhenTotalOrderCostIsOver400zlotys() {
+        // Given
+        CarItem carItem = givenCarItem(25L, "50.00");
+        // When
+        Long orderId = placedOrder(carItem.getId(), 9);
+        // Then
+        FullOrder order = orderOf(orderId);
+        assertEquals("450.00", order.getOrderPrice().getItemsPrice().toPlainString());
+        assertEquals("400.00", order.getFinalPrice().toPlainString());
+    }
+
     private FullOrder orderOf(Long orderId) {
         return queryOrderUseCase.findById(orderId).get();
     }

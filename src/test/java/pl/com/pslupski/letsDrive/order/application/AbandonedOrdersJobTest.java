@@ -15,6 +15,7 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.SubCategory;
 import pl.com.pslupski.letsDrive.clock.Clock;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.application.port.QueryOrderUseCase;
+import pl.com.pslupski.letsDrive.order.domain.Delivery;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 

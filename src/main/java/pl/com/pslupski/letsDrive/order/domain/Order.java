@@ -20,6 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Order extends BaseEntity {
+    @Singular
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private Set<OrderItem> items;
@@ -49,6 +50,9 @@ public class Order extends BaseEntity {
     }
 
     public BigDecimal getDeliveryPrice() {
+        if (items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
         return delivery.getPrice();
     }
 }

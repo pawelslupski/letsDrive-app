@@ -11,9 +11,9 @@ public class TotalPriceDiscountStrategy implements DiscountStrategy {
 
     @Override
     public BigDecimal calculate(Order order) {
-        if (isGreateOrEquals(order, 400)) {
+        if (isGreaterOrEquals(order, 400)) {
             return lowestCarItemPrice(order.getItems());
-        } else if (isGreateOrEquals(order, 200)) {
+        } else if (isGreaterOrEquals(order, 200)) {
             BigDecimal lowestCarItemPrice = lowestCarItemPrice(order.getItems());
             return lowestCarItemPrice.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
         }
@@ -28,7 +28,7 @@ public class TotalPriceDiscountStrategy implements DiscountStrategy {
                 .orElse(BigDecimal.ZERO);
     }
 
-    private boolean isGreateOrEquals(Order order, int value) {
+    private boolean isGreaterOrEquals(Order order, int value) {
         return order.getItemsPrice().compareTo(BigDecimal.valueOf(value)) >= 0;
     }
 }
