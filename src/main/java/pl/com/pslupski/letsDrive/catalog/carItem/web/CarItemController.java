@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,7 @@ public class CarItemController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> addCarItem(@Validated(CreateValidation.class) @RequestBody RestCarItemCommand command) {
@@ -57,6 +59,7 @@ public class CarItemController {
         return ServletUriComponentsBuilder.fromCurrentRequest().path("/" + carItem.getId().toString()).build().toUri();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateCarItem(@PathVariable Long id, @Validated(UpdateValidation.class) @RequestBody RestCarItemCommand command) {
@@ -67,12 +70,14 @@ public class CarItemController {
         }
     }
 
+    @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCarItem(@PathVariable Long id) {
         catalog.removeById(id);
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PutMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void addCarItemImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
@@ -83,6 +88,7 @@ public class CarItemController {
                 file.getContentType()));
     }
 
+    @Secured({"ROLE_ADMIN"})
     @DeleteMapping(value = "/{id}/image")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeCarItemImage(@PathVariable Long id) {
