@@ -3,6 +3,7 @@ package pl.com.pslupski.letsDrive.order.application;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.pslupski.letsDrive.clock.Clock;
@@ -24,6 +25,7 @@ class AbandonedOrdersJob {
     private final ModifyOrderUseCase orderUseCase;
     private final OrdersProperties properties;
     private final Clock clock;
+    private final User systemUser;
 
     @Transactional
     @Scheduled(cron = "${app.orders.abandon-cron}")
@@ -33,9 +35,7 @@ class AbandonedOrdersJob {
         List<Order> orders = repository.findByStatusAndCreatedAtIsLessThanEqual(OrderStatus.NEW, olderThan);
         log.info("Found orders to be abandoned: " + orders);
         orders.forEach(order -> {
-            // TODO repair in security module
-            String adminEmail = "admin@example.org";
-            UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, adminEmail);
+            UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, systemUser);
             orderUseCase.updateOrderStatus(updateStatusCommand);
         });
     }

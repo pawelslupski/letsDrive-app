@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.annotation.DirtiesContext;
 import pl.com.pslupski.letsDrive.catalog.carItem.application.port.CarItemUseCase;
 import pl.com.pslupski.letsDrive.catalog.carItem.db.CarItemJpaRepository;
@@ -18,6 +20,7 @@ import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase.*;
@@ -68,8 +71,7 @@ class OrderServiceTest {
         Long orderId = placedOrder(carItem1.getId(), 17, recipientEmail);
         Assertions.assertEquals(3L, getAvailableCopiesOf(carItem1));
         // When
-        // TODO fix on security module
-        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipientEmail);
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, user(recipientEmail));
         orderService.updateOrderStatus(updateStatusCommand);
         // Then
         Assertions.assertEquals(20L, getAvailableCopiesOf(carItem1));
@@ -96,8 +98,7 @@ class OrderServiceTest {
                 .item(new OrderItemCommand(carItemId, copies))
                 .delivery(Delivery.COURIER)
                 .build();
-        PlaceOrderResponse response = orderService.placeOrder(orderCommand);
-        return response.getOrderId();
+        return orderService.placeOrder(orderCommand).getRight();
     }
 
     private Long placedOrder(Long carItemId, int copies) {
@@ -133,7 +134,7 @@ class OrderServiceTest {
         Long orderId = placedOrder(carItem1.getId(), 3, recipientEmail);
         Assertions.assertEquals(17L, getAvailableCopiesOf(carItem1));
         // When
-        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, "brianek@o2.pl");
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, user("brianek@o2.pl"));
         orderService.updateOrderStatus(updateStatusCommand);
         // Then
         assertEquals(17L, getAvailableCopiesOf(carItem1));
@@ -149,7 +150,7 @@ class OrderServiceTest {
         Long orderId = placedOrder(carItem1.getId(), 6, adminEmail);
         Assertions.assertEquals(14L, getAvailableCopiesOf(carItem1));
         // When
-        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminEmail);
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adminUser());
         orderService.updateOrderStatus(updateStatusCommand);
         // Then
         assertEquals(20L, getAvailableCopiesOf(carItem1));
@@ -166,7 +167,7 @@ class OrderServiceTest {
         Assertions.assertEquals(5L, getAvailableCopiesOf(carItem1));
         // When
         // TODO fix on security module
-        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminEmail);
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminUser());
         orderService.updateOrderStatus(updateStatusCommand);
         // Then
         Assertions.assertEquals(5L, getAvailableCopiesOf(carItem1));
@@ -230,5 +231,13 @@ class OrderServiceTest {
     private CarItem givenCarItem(long available, String price) {
         return carItemJpaRepository.save(new CarItem("YU2550M", new BigDecimal(price),
                 Category.OIL, SubCategory.COOLING_AND_HEATING, available));
+    }
+
+    private User user(String email) {
+        return new User(email, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    }
+
+    private User adminUser() {
+        return new User("systemUser", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
 }

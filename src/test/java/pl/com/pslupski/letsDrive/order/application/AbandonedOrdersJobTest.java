@@ -73,7 +73,6 @@ class AbandonedOrdersJobTest {
                 .recipient(recipient)
                 .item(new ModifyOrderUseCase.OrderItemCommand(carItemId, copies))
                 .build();
-        ModifyOrderUseCase.PlaceOrderResponse response = orderService.placeOrder(orderCommand);
-        return response.getOrderId();
+        return orderService.placeOrder(orderCommand).getRight();
     }
 }
