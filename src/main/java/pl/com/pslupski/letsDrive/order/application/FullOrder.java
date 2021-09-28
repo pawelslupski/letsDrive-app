@@ -1,6 +1,7 @@
 package pl.com.pslupski.letsDrive.order.application;
 
 import lombok.Value;
+import pl.com.pslupski.letsDrive.order.application.price.OrderPrice;
 import pl.com.pslupski.letsDrive.order.domain.OrderItem;
 import pl.com.pslupski.letsDrive.order.domain.OrderStatus;
 import pl.com.pslupski.letsDrive.order.domain.Recipient;
@@ -17,10 +18,6 @@ class FullOrder {
     OrderStatus status;
     Recipient recipient;
     LocalDateTime createdAt;
-
-    public BigDecimal totalPrice() {
-        return items.stream()
-                .map(item -> item.getCarItem().getPrice().multiply(new BigDecimal(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    OrderPrice orderPrice;
+    BigDecimal finalPrice;
 }

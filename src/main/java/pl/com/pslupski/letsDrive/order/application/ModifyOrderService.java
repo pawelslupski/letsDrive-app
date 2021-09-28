@@ -8,9 +8,12 @@ import pl.com.pslupski.letsDrive.catalog.carItem.domain.CarItem;
 import pl.com.pslupski.letsDrive.order.application.port.ModifyOrderUseCase;
 import pl.com.pslupski.letsDrive.order.db.OrderJpaRepository;
 import pl.com.pslupski.letsDrive.order.db.RecipientJPaRepository;
-import pl.com.pslupski.letsDrive.order.domain.*;
+import pl.com.pslupski.letsDrive.order.domain.Order;
+import pl.com.pslupski.letsDrive.order.domain.OrderItem;
+import pl.com.pslupski.letsDrive.order.domain.Recipient;
+import pl.com.pslupski.letsDrive.order.domain.UpdateStatusResult;
+import pl.com.pslupski.letsDrive.security.UserSecurity;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,14 +24,18 @@ public class ModifyOrderService implements ModifyOrderUseCase {
     private final OrderJpaRepository repository;
     private final CarItemJpaRepository carItemRepository;
     private final RecipientJPaRepository recipientRepository;
+    private final UserSecurity userSecurity;
 
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderCommand command) {
-        Set<OrderItem> items = command.getItems().stream()
+        Set<OrderItem> items = command
+                .getItems()
+                .stream()
                 .map(this::toOrderItem)
                 .collect(Collectors.toSet());
         Order order = Order.builder()
                 .recipient(getOrCreateRecipient(command.getRecipient()))
+                .delivery(command.getDelivery())
                 .items(items)
                 .build();
         Order savedOrder = repository.save(order);
@@ -52,17 +59,20 @@ public class ModifyOrderService implements ModifyOrderUseCase {
     }
 
     @Override
-    public UpdateStatusResponse updateOrderStatus(Long id, OrderStatus status) {
-        return repository.findById(id)
+    @Transactional
+    public UpdateStatusResponse updateOrderStatus(UpdateStatusCommand command) {
+        return repository.findById(command.getOrderId())
                 .map(order -> {
-                    UpdateStatusResult updateStatusResult = order.updateStatus(status);
-                    if (updateStatusResult.isRevoked()) {
-                        carItemRepository.saveAll(revokeItemsQty(order.getItems()));
+                    if (userSecurity.isOwnerOrAdmin(command.getUser(), order.getRecipient().getEmail())) {
+                        UpdateStatusResult updateStatusResult = order.updateStatus(command.getStatus());
+                        if (updateStatusResult.isRevoked()) {
+                            carItemRepository.saveAll(revokeItemsQty(order.getItems()));
+                        }
+                        repository.save(order);
+                        return UpdateStatusResponse.success(order.getStatus());
                     }
-                    Order updatedOrder = repository.save(order);
-                    return UpdateStatusResponse.success(updatedOrder.getId());
-                }).orElseGet(() -> new UpdateStatusResponse(false, id,
-                        Collections.singletonList("Order NOT found with ID: " + id)));
+                    return UpdateStatusResponse.failure(Error.FORBIDDEN);
+                }).orElseGet(() -> UpdateStatusResponse.failure(Error.NOT_FOUND));
     }
 
     private Set<CarItem> reduceItemsQty(Set<OrderItem> items) {
