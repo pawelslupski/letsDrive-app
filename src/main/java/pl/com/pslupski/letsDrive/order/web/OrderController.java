@@ -1,11 +1,12 @@
 package pl.com.pslupski.letsDrive.order.web;
 
 import lombok.AllArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.com.pslupski.letsDrive.order.application.FullOrder;
@@ -41,13 +42,13 @@ public class OrderController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getOrderById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return queryOrderUseCase.findById(id)
                 .map(order -> authorize(order, user))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    public ResponseEntity<FullOrder> authorize(FullOrder order, User user) {
+    public ResponseEntity<FullOrder> authorize(FullOrder order, UserDetails user) {
         if (userSecurity.isOwnerOrAdmin(user, order.getRecipient().getEmail())) {
             return ResponseEntity.ok(order);
         }
@@ -71,7 +72,7 @@ public class OrderController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Object> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body, @AuthenticationPrincipal UserDetails user) {
         String status = body.get("status");
         OrderStatus orderStatus = OrderStatus
                 .parseString(status)

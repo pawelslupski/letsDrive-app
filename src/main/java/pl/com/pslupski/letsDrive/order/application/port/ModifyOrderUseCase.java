@@ -3,6 +3,7 @@ package pl.com.pslupski.letsDrive.order.application.port;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import pl.com.pslupski.letsDrive.commons.Either;
 import pl.com.pslupski.letsDrive.order.domain.Delivery;
 import pl.com.pslupski.letsDrive.order.domain.Order;
@@ -53,7 +54,7 @@ public interface ModifyOrderUseCase {
     class UpdateStatusCommand {
         Long orderId;
         OrderStatus status;
-        User user;
+        UserDetails user;
     }
 
     class PlaceOrderResponse extends Either<String, Long> {

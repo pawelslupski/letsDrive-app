@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class CatalogInitializerService implements CatalogInitializerUseCase {
+    private final CarUseCase carCatalog;
     private final CarItemUseCase carItemCatalog;
     private final ModifyOrderUseCase placeOrder;
     private final CarJpaRepository carRepository;
@@ -48,22 +49,22 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
     @Override
     @Transactional
     public void initialize() {
-//        initData();
-        initDataFromCsv();
+        initData();
+//        initDataFromCsv();
         placeOrder();
     }
 
-//        private void initData() {
-//        Car car = carCatalog.addCar(new CarUseCase.CreateCarCommand("BMW", "X5", 2019, 4.4, "petrol"));
-//        Car car2 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Toyota",  "Prius", 2017, 1.5, "hybrid"));
-//        Car car3 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Volvo", "S60", 2014, 2.0, "petrol"));
-//        Car car4 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Fiat", "Punto", 2012, 1.2, "petrol"));
-//        Car car5 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Opel", "Mokka", 2017, 1.8, "diesel"));
-//
-//        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KJ5646T", new BigDecimal("123.67"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId()), 100L));
-//        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KY5622I", new BigDecimal("255.45"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId(), car2.getId()), 100L));
-//        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("YU5231L", new BigDecimal("1200.00"), Category.CAR_PARTS, SubCategory.COOLING_AND_HEATING, Set.of(car3.getId(), car4.getId(), car5.getId()), 100L));
-//    }
+        private void initData() {
+        Car car = carCatalog.addCar(new CarUseCase.CreateCarCommand("BMW", "X5", 2019, 4.4, "petrol"));
+        Car car2 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Toyota",  "Prius", 2017, 1.5, "hybrid"));
+        Car car3 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Volvo", "S60", 2014, 2.0, "petrol"));
+        Car car4 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Fiat", "Punto", 2012, 1.2, "petrol"));
+        Car car5 = carCatalog.addCar(new CarUseCase.CreateCarCommand("Opel", "Mokka", 2017, 1.8, "diesel"));
+
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KJ5646T", new BigDecimal("123.67"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId()), 100L));
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("KY5622I", new BigDecimal("255.45"), Category.CAR_PARTS, SubCategory.BRAKES, Set.of(car.getId(), car2.getId()), 100L));
+        carItemCatalog.addCarItem(new CarItemUseCase.CreateCarItemCommand("YU5231L", new BigDecimal("1200.00"), Category.CAR_PARTS, SubCategory.COOLING_AND_HEATING, Set.of(car3.getId(), car4.getId(), car5.getId()), 100L));
+    }
 
     private void initDataFromCsv() {
         ClassPathResource resource = new ClassPathResource("carParts.csv");
