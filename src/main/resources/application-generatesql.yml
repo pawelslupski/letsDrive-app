@@ -1,0 +1,11 @@
+spring:
+  flyway.enabled: false
+  jpa.properties.javax.persistence.schema-generation.scripts:
+    action: create
+    create-target: create.sql
+    create-source: metadata
+spring.datasource.url: jdbc:postgresql://localhost:7432/letsdrive
+spring.datasource.username: slupi
+spring.datasource.password: pass123
+spring.datasource.driver-class-name: org.postgresql.Driver
+spring.jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
