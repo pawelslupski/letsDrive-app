@@ -39,6 +39,7 @@ public class LetsDriveAppSecurityConfiguration extends WebSecurityConfigurerAdap
         http.authorizeRequests()
                 .mvcMatchers(HttpMethod.GET, "/cars/**", "/items/**", "/uploads/**").permitAll()
                 .mvcMatchers(HttpMethod.POST, "/orders/**", "/login", "/users").permitAll()
+                .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()

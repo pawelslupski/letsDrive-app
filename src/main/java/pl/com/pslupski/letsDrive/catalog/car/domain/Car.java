@@ -24,6 +24,7 @@ public class Car extends BaseEntity {
     private Double engine;
     private String fuel;
     private String manufacturer;
+    private String plateNumber;
     private Long imageId;
     @ManyToMany(mappedBy = "cars", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties("cars")
